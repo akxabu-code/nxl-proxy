@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NXL OFC DASHBOARD</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #050508;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 16px;
+            color: #ffffff;
+        }
+
+        /* Main Panel styling perfectly matching the dashboard layout */
+        .dashboard-card {
+            background-color: #0f0f15;
+            border: 1px solid #1a1a26;
+            border-radius: 28px;
+            width: 100%;
+            max-width: 400px;
+            padding: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Top Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: #8a4fff;
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            color: #fff;
+        }
+
+        .brand h2 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .brand h2 span {
+            color: #8a4fff;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            background-color: rgba(255, 75, 75, 0.1);
+            color: #ff4b4b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-badge.working {
+            background-color: rgba(0, 230, 118, 0.1);
+            color: #00e676;
+        }
+
+        .status-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background-color: currentColor;
+            border-radius: 50%;
+        }
+
+        /* IP Status Node Area */
+        .status-bar {
+            background-color: #151522;
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 15px;
+            color: #a0a0b0;
+            font-weight: 500;
+        }
+
+        .auth-badge {
+            background-color: rgba(138, 79, 255, 0.1);
+            color: #8a4fff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* Gateway Key Module */
+        .key-container {
+            background-color: #151522;
+            border: 1px solid #222235;
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .key-input {
+            flex: 1;
+            background: #09090e;
+            border: 1px solid #222235;
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .key-input:focus {
+            border-color: #8a4fff;
+        }
+
+        .btn-verify {
+            background: #8a4fff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Main Target Button */
+        .btn-main {
+            background: #222230;
+            color: #555565;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: not-allowed;
+            margin-bottom: 24px;
+            transition: background 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Screen Locking Layout */
+        .disabled-layer {
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        /* Control Labels */
+        .section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #444455;
+            margin-bottom: 12px;
+            margin-top: 18px;
+            font-weight: 700;
+        }
+
+        /* Functional Selection Grid */
+        .toggle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .toggle-card {
+            background-color: #151522;
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-info .title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e2e8;
+        }
+
+        .toggle-info .sub {
+            font-size: 9px;
+            color: #555565;
+            margin-top: 2px;
+        }
+
+        /* Dynamic Toggle Component */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 38px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #252535;
+            transition: .3s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #8a4fff;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+        /* Slider Control Panel */
+        .slider-box {
+            background-color: #151522;
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .range-input {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #252535;
+            outline: none;
+        }
+
+        .range-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #8a4fff;
+            cursor: pointer;
+        }
+
+        .slider-val {
+            font-size: 16px;
+            font-weight: bold;
+            color: #8a4fff;
+            min-width: 24px;
+            text-align: right;
+        }
+
+        /* Official Footer */
+        .footer-brand {
+            text-align: center;
+            font-size: 11px;
+            color: #444455;
+            margin-top: 28px;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-card">
+    <div class="header">
+        <div class="brand">
+            <div class="logo-icon">📡</div>
+            <h2>NXL <span>OFC</span></h2>
+        </div>
+        <div class="status-badge" id="statusBadge">LOCKED</div>
+    </div>
+
+    <div class="status-bar">
+        <span id="ipAddress">---.---.---.---</span>
+        <span class="auth-badge" id="authBadge">Unauthorized</span>
+    </div>
+
+    <div class="key-container" id="keyContainer">
+        <input type="text" class="key-input" id="keyInput" placeholder="Enter Validation Key...">
+        <button class="btn-verify" id="verifyBtn">Verify</button>
+    </div>
+
+    <div id="controlsWrapper" class="disabled-layer">
+        
+        <button class="btn-main" id="proxyBtn" disabled>▶ Start Proxy</button>
+
+        <div class="section-title">🧭 Aim Assist</div>
+        <div class="toggle-grid">
+            <div class="toggle-card">
+                <div class="toggle-info">
+                    <div class="title">HS NECK</div>
+                    <div class="sub">iOS</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-card">
+                <div class="toggle-info">
+                    <div class="title">HS CHEST</div>
+                    <div class="sub">iOS</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="section-title">⚖️ Configuration</div>
+        <div class="toggle-grid">
+            <div class="toggle-card">
+                <div class="toggle-info">
+                    <div class="title">BYPASS V1</div>
+                    <div class="sub">Anti-ban</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-card">
+                <div class="toggle-info">
+                    <div class="title">NO SWAP</div>
+                    <div class="sub">Instant</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-card">
+                <div class="toggle-info">
+                    <div class="title">BACKJUMP V1</div>
+                    <div class="sub">Jump</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-card">
+                <div class="toggle-info">
+                    <div class="title">HIGH JUMP</div>
+                    <div class="sub">Super</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-card">
+                <div class="toggle-info">
+                    <div class="title">ZIG ZAG</div>
+                    <div class="sub">Move</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="toggle-card">
+                <div class="toggle-info">
+                    <div class="title">HIGH SENSI</div>
+                    <div class="sub">Sensitivity</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="section-title">⚡ Speed</div>
+        <div class="slider-box">
+            <span style="font-size: 13px; color: #a0a0b0;">Speed Value</span>
+            <input type="range" min="1.0" max="5.0" step="0.1" value="2.0" class="range-input" id="speedRange">
+            <span class="slider-val" id="speedVal">2.0</span>
+        </div>
+    </div>
+
+    <div class="footer-brand">BY ABUKI _ @NXL_TEAM _ PROXY</div>
+</div>
+
+<script>
+    // Access token string configuration
+    const SECRET_ACCESS_KEY = "NXL-ABUKI-60";
+
+    const keyInput = document.getElementById('keyInput');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const keyContainer = document.getElementById('keyContainer');
+    const controlsWrapper = document.getElementById('controlsWrapper');
+    const proxyBtn = document.getElementById('proxyBtn');
+    const statusBadge = document.getElementById('statusBadge');
+    const ipAddress = document.getElementById('ipAddress');
+    const authBadge = document.getElementById('authBadge');
+    const range = document.getElementById('speedRange');
+    const valueDisplay = document.getElementById('speedVal');
+
+    range.addEventListener('input', (e) => {
+        valueDisplay.textContent = parseFloat(e.target.value).toFixed(1);
+    });
+
+    // Verification Logic Check
+    verifyBtn.addEventListener('click', () => {
+        if(keyInput.value.trim() === SECRET_ACCESS_KEY) {
+            alert("Access Code Approved! Interface Unlocked.");
+            
+            keyContainer.style.display = "none";
+            controlsWrapper.classList.remove('disabled-layer');
+            
+            proxyBtn.removeAttribute('disabled');
+            proxyBtn.style.background = "#8a4fff";
+            proxyBtn.style.color = "white";
+            proxyBtn.style.cursor = "pointer";
+            
+            statusBadge.textContent = "LIVE";
+            statusBadge.style.color = "#00e676";
+            statusBadge.style.backgroundColor = "rgba(0, 230, 118, 0.1)";
+            
+            ipAddress.textContent = "106.192.109.102";
+            authBadge.textContent = "Authorized";
+            authBadge.style.background = "rgba(138, 79, 255, 0.15)";
+        } else {
+            alert("Error: Invalid validation license key.");
+        }
+    });
+
+    // Main Run Simulator Event Trigger
+    proxyBtn.addEventListener('click', () => {
+        if(proxyBtn.textContent.includes("Start")) {
+            proxyBtn.textContent = "⏹ Stop Proxy";
+            proxyBtn.style.background = "#d32f2f";
+            statusBadge.textContent = "100% WORKING";
+            statusBadge.classList.add('working');
+        } else {
+            proxyBtn.textContent = "▶ Start Proxy";
+            proxyBtn.style.background = "#8a4fff";
+            statusBadge.textContent = "LIVE";
+            statusBadge.classList.remove('working');
+        }
+    });
+</script>
+
+</body>
+</html>
